@@ -17,8 +17,10 @@ class Debounce implements ShouldQueue, DebouncesJobs
 
     /** @var string */
     protected $debounceable;
+
     /** @var int */
     protected $waitTime;
+
     /** @var array */
     protected $jobArgs;
 
@@ -62,6 +64,6 @@ class Debounce implements ShouldQueue, DebouncesJobs
 
     public function cacheJob(string $uniqueId)
     {
-        Cache::put($this->cacheKey($this->debounceable), $uniqueId, max(1, (int) (($this->waitTime * 2) / 60)));
+        Cache::put($this->cacheKey($this->debounceable), $uniqueId, Carbon::now()->addSeconds($this->waitTime * 2));
     }
 }
