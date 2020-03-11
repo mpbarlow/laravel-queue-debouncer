@@ -16,11 +16,9 @@ class CacheKeyProvider implements CacheKeyProviderContract
 {
     public function getKey($job): string
     {
-        if ($job instanceof Closure) {
-            $identifier = sha1((string)(new ReflectionFunction($job)));
-        } else {
-            $identifier = get_class($job);
-        }
+        $identifier = $job instanceof Closure
+            ? sha1((string)(new ReflectionFunction($job)))
+            : get_class($job);
 
         return config('queue_debouncer.cache_prefix') . ':' . $identifier;
     }

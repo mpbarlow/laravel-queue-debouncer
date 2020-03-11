@@ -35,7 +35,7 @@ class Debouncer
     }
 
     /**
-     * @param Dispatchable|Closure|string $job
+     * @param Dispatchable|Closure $job
      * @param DateTimeInterface|DateInterval|int|null $wait
      * @return PendingDispatch
      */
@@ -51,8 +51,13 @@ class Debouncer
         )->delay($wait);
     }
 
-    public function debounce(...$args)
+    /**
+     * @param Dispatchable|Closure $job
+     * @param DateTimeInterface|DateInterval|int|null $wait
+     * @return PendingDispatch
+     */
+    public function debounce($job, $wait)
     {
-        return $this(...$args);
+        return $this($job, $wait);
     }
 }

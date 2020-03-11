@@ -13,11 +13,12 @@ use function dispatch;
 class DispatcherFactory
 {
     /**
-     * By using a closure for the "job runner" that we push the the queue, we don't have to worry about whether the job
-     * we're running is a class or a closure. If we used a class for this, we would have to handle checking whether the
-     * job is a closure, and serialising it if it is.
+     * By using a closure for the "dispatcher" that we push the the queue, we don't have to worry about whether the
+     * underlying job we're debouncing is a class or a closure, because the framework will handle it for us.
+     * If we used a class as the dispatcher, we would have to check whether the job is a closure ourselves, and
+     * serialise it if it was.
      *
-     * @param Dispatchable|Closure|string $job
+     * @param Dispatchable|Closure $job
      * @param string $key
      * @param string $identifier
      * @return Closure

@@ -18,11 +18,15 @@ class ServiceProvider extends IlluminateServiceProvider
         $this->mergeConfigFrom(__DIR__ . '/Support/config.php', 'queue_debouncer');
 
         $this->app->bind(CacheKeyProvider::class, function (Application $app) {
-            return $app->make($app['config']->get('queue_debouncer.cache_key_provider'));
+            return $app->make(
+                $app['config']->get('queue_debouncer.cache_key_provider')
+            );
         });
 
         $this->app->bind(UniqueIdentifierProvider::class, function (Application $app) {
-            return $app->make($app['config']->get('queue_debouncer.unique_identifier_provider'));
+            return $app->make(
+                $app['config']->get('queue_debouncer.unique_identifier_provider')
+            );
         });
     }
 
