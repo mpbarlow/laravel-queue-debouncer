@@ -4,6 +4,7 @@
 namespace Mpbarlow\LaravelQueueDebouncer\Tests;
 
 
+use Illuminate\Foundation\Bus\Dispatchable;
 use Mpbarlow\LaravelQueueDebouncer\Support\CacheKeyProvider;
 use ReflectionFunction;
 
@@ -74,4 +75,6 @@ class CacheKeyProviderTest extends TestCase
     }
 }
 
-class DummyJob {}
+class DummyJob {
+    use Dispatchable;
+}
