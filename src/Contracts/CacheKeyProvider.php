@@ -5,12 +5,11 @@ namespace Mpbarlow\LaravelQueueDebouncer\Contracts;
 
 
 use Closure;
-use Illuminate\Foundation\Bus\Dispatchable;
 
 interface CacheKeyProvider
 {
     /**
-     * @param Dispatchable|Closure $job
+     * @param \Illuminate\Foundation\Bus\Dispatchable|\Illuminate\Foundation\Bus\PendingChain|\Illuminate\Bus\PendingBatch|Closure $job
      * @return string
      */
     public function getKey($job): string;

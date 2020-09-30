@@ -4,16 +4,22 @@
 namespace Mpbarlow\LaravelQueueDebouncer\Tests;
 
 
-use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Bus\PendingBatch;
+use Illuminate\Foundation\Bus\PendingChain;
 use Illuminate\Queue\CallQueuedClosure;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Cache;
 use Mpbarlow\LaravelQueueDebouncer\Debouncer;
 use Mpbarlow\LaravelQueueDebouncer\DispatcherFactory;
 use Mpbarlow\LaravelQueueDebouncer\Support\CacheKeyProvider;
+use Mpbarlow\LaravelQueueDebouncer\Support\ParameterAwareCacheKeyProvider;
 use Mpbarlow\LaravelQueueDebouncer\Support\UniqueIdentifierProvider;
+use Mpbarlow\LaravelQueueDebouncer\Tests\Support\CustomCacheKeyProvider;
+use Mpbarlow\LaravelQueueDebouncer\Tests\Support\CustomUniqueIdentifierProvider;
+use Mpbarlow\LaravelQueueDebouncer\Tests\Support\DummyJob;
 use ReflectionFunction;
 
+use function class_exists;
 
 class DebounceTest extends TestCase
 {
@@ -44,8 +50,10 @@ class DebounceTest extends TestCase
      * @test
      * @dataProvider jobProvider
      */
-    public function it_debounces_jobs($job, $expectedDispatch)
+    public function it_debounces_jobs($provider)
     {
+        [$job, $expectedDispatch, $keyProvider] = $provider();
+
         // So this is pretty tricky to test. It's a job that dispatches another job, so when we're faking the bus we
         // have to get a bit creative.
         Bus::fake();
@@ -57,13 +65,14 @@ class DebounceTest extends TestCase
                 ->andReturn(1, 2, 3);
         });
 
-        $key = $this->app->make(CacheKeyProvider::class)->getKey($job);
+        $key = $this->app->make($keyProvider)->getKey($job);
         $debouncer = $this->app->make(Debouncer::class);
 
         // Then we call the debouncer three times, asserting that each time, it's setting the cache value correctly,
         // and dispatching a runner closure with the values we expect.
         foreach ([1, 2, 3] as $i) {
             $debouncer($job, PHP_INT_MAX);
+
             $this->assertEquals($i, Cache::get($key));
 
             Bus::assertDispatched(CallQueuedClosure::class, function ($dispatch) use ($job, $key, $i) {
@@ -101,19 +110,63 @@ class DebounceTest extends TestCase
 
     public function jobProvider(): array
     {
-        return [
-            [new Job(), Job::class],
-            [function () {}, CallQueuedClosure::class]
+        // Annoyingly we have to wrap each data set in a function as data providers run before the container is
+        // initialised. Each provides the job to debounce, the class we ultimately expect to be dispatched, and the
+        // cache key provider to use for the test.
+
+        // Closures and standard classes should work with both included cache key providers.
+        // Chains and batches only work with the serialisation-based key provider.
+        $jobTypes = [
+            [
+                function () {
+                    return [
+                        function () {
+                        },
+                        CallQueuedClosure::class,
+                        CacheKeyProvider::class
+                    ];
+                }
+            ],
+            [
+                function () {
+                    return [
+                        function () {
+                        },
+                        CallQueuedClosure::class,
+                        ParameterAwareCacheKeyProvider::class
+                    ];
+                }
+            ],
+            [
+                function () {
+                    return [new DummyJob(), DummyJob::class, CacheKeyProvider::class];
+                }
+            ],
+            [
+                function () {
+                    return [new DummyJob(), DummyJob::class, ParameterAwareCacheKeyProvider::class];
+                }
+            ],
+            [
+                function () {
+                    return [
+                        DummyJob::withChain([new DummyJob()]),
+                        PendingChain::class,
+                        ParameterAwareCacheKeyProvider::class
+                    ];
+                }
+            ]
         ];
-    }
-}
 
-class Job
-{
-    use Dispatchable;
+        // PendingBatch is only available in Laravel >= 8.0.
+        if (class_exists('\Illuminate\Bus\PendingBatch')) {
+            $jobTypes[] = [
+                function () {
+                    return [Bus::batch([new DummyJob()]), PendingBatch::class, ParameterAwareCacheKeyProvider::class];
+                }
+            ];
+        }
 
-    public function handle()
-    {
-        //
+        return $jobTypes;
     }
 }

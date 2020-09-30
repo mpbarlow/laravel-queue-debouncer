@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Facade;
 
 /**
  * @see \Mpbarlow\LaravelQueueDebouncer\Debouncer
- * @method static \Illuminate\Foundation\Bus\PendingDispatch debounce(\Illuminate\Foundation\Bus\Dispatchable|\Closure $job, \DateTimeInterface|\DateInterval|int|null $wait)
+ * @method static \Illuminate\Foundation\Bus\PendingDispatch debounce(\Illuminate\Foundation\Bus\Dispatchable|\Illuminate\Foundation\Bus\PendingChain|\Illuminate\Bus\PendingBatch|\Closure $job, \DateTimeInterface|\DateInterval|int|null $wait)
  */
 class Debouncer extends Facade
 {
