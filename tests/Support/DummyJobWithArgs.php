@@ -4,11 +4,12 @@
 namespace Mpbarlow\LaravelQueueDebouncer\Tests\Support;
 
 
+use Illuminate\Bus\Queueable;
 use Illuminate\Foundation\Bus\Dispatchable;
 
 class DummyJobWithArgs
 {
-    use Dispatchable;
+    use Dispatchable, Queueable;
 
     protected $arg;
 

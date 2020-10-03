@@ -10,6 +10,8 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Support\Facades\Cache;
 use Mpbarlow\LaravelQueueDebouncer\Contracts\CacheKeyProvider;
 use Mpbarlow\LaravelQueueDebouncer\Contracts\UniqueIdentifierProvider;
+use Mpbarlow\LaravelQueueDebouncer\Support\ClosureCacheKeyProvider;
+use Mpbarlow\LaravelQueueDebouncer\Support\ClosureUniqueIdentifierProvider;
 
 use function dispatch;
 
@@ -31,22 +33,34 @@ class Debouncer
         $this->factory = $factory;
     }
 
-    public function usingCacheKeyProvider(CacheKeyProvider $provider): self
+    /**
+     * @param CacheKeyProvider|Closure $provider
+     * @return $this
+     */
+    public function usingCacheKeyProvider($provider): self
     {
-        $this->keyProvider = $provider;
-
-        return $this;
-    }
-
-    public function usingUniqueIdentifierProvider(UniqueIdentifierProvider $provider): self
-    {
-        $this->idProvider = $provider;
+        $this->keyProvider = $provider instanceof Closure
+            ? new ClosureCacheKeyProvider($provider)
+            : $provider;
 
         return $this;
     }
 
     /**
-     * @param Dispatchable|\Illuminate\Foundation\Bus\PendingChain|\Illuminate\Bus\PendingBatch|Closure $job
+     * @param UniqueIdentifierProvider|Closure $provider
+     * @return $this
+     */
+    public function usingUniqueIdentifierProvider($provider): self
+    {
+        $this->idProvider = $provider instanceof Closure
+            ? new ClosureUniqueIdentifierProvider($provider)
+            : $provider;
+
+        return $this;
+    }
+
+    /**
+     * @param Dispatchable|\Illuminate\Foundation\Bus\PendingChain|Closure $job
      * @param \DateTimeInterface|\DateInterval|int|null $wait
      * @return \Illuminate\Foundation\Bus\PendingDispatch
      */
@@ -63,7 +77,7 @@ class Debouncer
     }
 
     /**
-     * @param Dispatchable|\Illuminate\Foundation\Bus\PendingChain|\Illuminate\Bus\PendingBatch|Closure $job
+     * @param Dispatchable|\Illuminate\Foundation\Bus\PendingChain|Closure $job
      * @param \DateTimeInterface|\DateInterval|int|null $wait
      * @return \Illuminate\Foundation\Bus\PendingDispatch
      */

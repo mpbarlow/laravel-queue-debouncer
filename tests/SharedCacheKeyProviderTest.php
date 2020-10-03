@@ -4,12 +4,10 @@
 namespace Mpbarlow\LaravelQueueDebouncer\Tests;
 
 
-use Illuminate\Support\Facades\Bus;
 use Mpbarlow\LaravelQueueDebouncer\Support\CacheKeyProvider;
-use Mpbarlow\LaravelQueueDebouncer\Support\ParameterAwareCacheKeyProvider;
+use Mpbarlow\LaravelQueueDebouncer\Support\SerializingCacheKeyProvider;
 use Mpbarlow\LaravelQueueDebouncer\Tests\Support\DummyJob;
 
-use function class_exists;
 use function strpos;
 
 class SharedCacheKeyProviderTest extends TestCase
@@ -39,27 +37,6 @@ class SharedCacheKeyProviderTest extends TestCase
         $this->app['config']->set('queue_debouncer.cache_prefix', $prefix = '__PREFIX__');
 
         $job = DummyJob::withChain([new DummyJob()]);
-
-        $this->assertSame(
-            0,
-            strpos($provider->getKey($job), $prefix)
-        );
-    }
-
-    /**
-     * @test
-     * @dataProvider cacheKeyProviderProvider
-     */
-    public function it_applies_the_cache_prefix_to_batches($provider)
-    {
-        if (! class_exists('\Illuminate\Bus\PendingBatch')) {
-            $this->markTestSkipped('[\Illuminate\Bus\PendingBatch] is only available on Laravel >= 8.0.');
-            return;
-        }
-
-        $this->app['config']->set('queue_debouncer.cache_prefix', $prefix = '__PREFIX__');
-
-        $job = Bus::batch([new DummyJob()]);
 
         $this->assertSame(
             0,
@@ -122,7 +99,7 @@ class SharedCacheKeyProviderTest extends TestCase
     {
         return [
             [new CacheKeyProvider()],
-            [new ParameterAwareCacheKeyProvider()]
+            [new SerializingCacheKeyProvider()]
         ];
     }
 }

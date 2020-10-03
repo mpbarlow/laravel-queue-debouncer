@@ -9,7 +9,7 @@ use Mpbarlow\LaravelQueueDebouncer\Contracts\CacheKeyProvider as CacheKeyProvide
 use function config;
 use function sha1;
 
-class ParameterAwareCacheKeyProvider implements CacheKeyProviderContract
+class SerializingCacheKeyProvider implements CacheKeyProviderContract
 {
     public function getKey($job): string
     {
