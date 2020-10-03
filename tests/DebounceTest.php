@@ -4,16 +4,21 @@
 namespace Mpbarlow\LaravelQueueDebouncer\Tests;
 
 
-use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\CallQueuedClosure;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Cache;
 use Mpbarlow\LaravelQueueDebouncer\Debouncer;
 use Mpbarlow\LaravelQueueDebouncer\DispatcherFactory;
 use Mpbarlow\LaravelQueueDebouncer\Support\CacheKeyProvider;
-use Mpbarlow\LaravelQueueDebouncer\Support\UniqueIdentifierProvider;
+use Mpbarlow\LaravelQueueDebouncer\Support\SerializingCacheKeyProvider;
+use Mpbarlow\LaravelQueueDebouncer\Tests\Support\CustomCacheKeyProvider;
+use Mpbarlow\LaravelQueueDebouncer\Tests\Support\CustomUniqueIdentifierProvider;
+use Mpbarlow\LaravelQueueDebouncer\Tests\Support\DummyJob;
 use ReflectionFunction;
 
+use function array_shift;
+
+use const PHP_INT_MAX;
 
 class DebounceTest extends TestCase
 {
@@ -37,33 +42,37 @@ class DebounceTest extends TestCase
                 ->once();
         });
 
-        $this->app->make(Debouncer::class)(null, null);
+        $this->app->make(Debouncer::class)(function () {
+        }, PHP_INT_MAX);
     }
 
     /**
      * @test
      * @dataProvider jobProvider
      */
-    public function it_debounces_jobs($job, $expectedDispatch)
+    public function it_debounces_jobs($job, $expectedDispatch, $keyProvider)
     {
         // So this is pretty tricky to test. It's a job that dispatches another job, so when we're faking the bus we
         // have to get a bit creative.
         Bus::fake();
 
-        // First we mock the ID provider so we know what identifiers we'll be getting.
-        $this->mock(UniqueIdentifierProvider::class, function ($mock) {
-            $mock
-                ->shouldReceive('getIdentifier')
-                ->andReturn(1, 2, 3);
-        });
+        // First, ensure we're using the chosen key provider by default.
+        $this->app['config']->set('queue_debouncer.cache_key_provider', $keyProvider);
+        $key = $this->app->make($keyProvider)->getKey($job);
 
-        $key = $this->app->make(CacheKeyProvider::class)->getKey($job);
-        $debouncer = $this->app->make(Debouncer::class);
+        // Next, set up an identifier provider so we know what values we'll be putting in the cache ahead of time.
+        $identifiers = [1, 2, 3];
+
+        $debouncer = $this->app->make(Debouncer::class)
+            ->usingUniqueIdentifierProvider(function () use (&$identifiers) {
+                return array_shift($identifiers);
+            });
 
         // Then we call the debouncer three times, asserting that each time, it's setting the cache value correctly,
         // and dispatching a runner closure with the values we expect.
         foreach ([1, 2, 3] as $i) {
             $debouncer($job, PHP_INT_MAX);
+
             $this->assertEquals($i, Cache::get($key));
 
             Bus::assertDispatched(CallQueuedClosure::class, function ($dispatch) use ($job, $key, $i) {
@@ -101,19 +110,14 @@ class DebounceTest extends TestCase
 
     public function jobProvider(): array
     {
+        // Closures and standard classes should work with both included cache key providers.
+        // Chains only work with the serialisation-based key provider.
         return [
-            [new Job(), Job::class],
-            [function () {}, CallQueuedClosure::class]
+            [function () {}, CallQueuedClosure::class, CacheKeyProvider::class],
+            [function () {}, CallQueuedClosure::class, SerializingCacheKeyProvider::class],
+            [new DummyJob(), DummyJob::class, CacheKeyProvider::class],
+            [new DummyJob(), DummyJob::class, SerializingCacheKeyProvider::class],
+            [DummyJob::withChain([new DummyJob()]), DummyJob::class, SerializingCacheKeyProvider::class]
         ];
-    }
-}
-
-class Job
-{
-    use Dispatchable;
-
-    public function handle()
-    {
-        //
     }
 }

@@ -5,14 +5,13 @@ namespace Mpbarlow\LaravelQueueDebouncer;
 
 
 use Closure;
-use DateInterval;
-use DateTimeInterface;
 use Illuminate\Bus\Queueable;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Foundation\Bus\PendingDispatch;
 use Illuminate\Support\Facades\Cache;
 use Mpbarlow\LaravelQueueDebouncer\Contracts\CacheKeyProvider;
 use Mpbarlow\LaravelQueueDebouncer\Contracts\UniqueIdentifierProvider;
+use Mpbarlow\LaravelQueueDebouncer\Support\ClosureCacheKeyProvider;
+use Mpbarlow\LaravelQueueDebouncer\Support\ClosureUniqueIdentifierProvider;
 
 use function dispatch;
 
@@ -35,9 +34,35 @@ class Debouncer
     }
 
     /**
-     * @param Dispatchable|Closure $job
-     * @param DateTimeInterface|DateInterval|int|null $wait
-     * @return PendingDispatch
+     * @param CacheKeyProvider|Closure $provider
+     * @return $this
+     */
+    public function usingCacheKeyProvider($provider): self
+    {
+        $this->keyProvider = $provider instanceof Closure
+            ? new ClosureCacheKeyProvider($provider)
+            : $provider;
+
+        return $this;
+    }
+
+    /**
+     * @param UniqueIdentifierProvider|Closure $provider
+     * @return $this
+     */
+    public function usingUniqueIdentifierProvider($provider): self
+    {
+        $this->idProvider = $provider instanceof Closure
+            ? new ClosureUniqueIdentifierProvider($provider)
+            : $provider;
+
+        return $this;
+    }
+
+    /**
+     * @param Dispatchable|\Illuminate\Foundation\Bus\PendingChain|Closure $job
+     * @param \DateTimeInterface|\DateInterval|int|null $wait
+     * @return \Illuminate\Foundation\Bus\PendingDispatch
      */
     public function __invoke($job, $wait)
     {
@@ -52,9 +77,9 @@ class Debouncer
     }
 
     /**
-     * @param Dispatchable|Closure $job
-     * @param DateTimeInterface|DateInterval|int|null $wait
-     * @return PendingDispatch
+     * @param Dispatchable|\Illuminate\Foundation\Bus\PendingChain|Closure $job
+     * @param \DateTimeInterface|\DateInterval|int|null $wait
+     * @return \Illuminate\Foundation\Bus\PendingDispatch
      */
     public function debounce($job, $wait)
     {

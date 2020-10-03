@@ -6,6 +6,8 @@ namespace Mpbarlow\LaravelQueueDebouncer\Tests;
 
 use Mpbarlow\LaravelQueueDebouncer\Contracts\CacheKeyProvider as CacheKeyProviderContract;
 use Mpbarlow\LaravelQueueDebouncer\Contracts\UniqueIdentifierProvider as UniqueIdentifierProviderContract;
+use Mpbarlow\LaravelQueueDebouncer\Tests\Support\CustomCacheKeyProvider;
+use Mpbarlow\LaravelQueueDebouncer\Tests\Support\CustomUniqueIdentifierProvider;
 
 class ServiceProviderTest extends TestCase
 {

@@ -5,7 +5,7 @@ namespace Mpbarlow\LaravelQueueDebouncer;
 
 
 use Closure;
-use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Foundation\Bus\PendingChain;
 use Illuminate\Support\Facades\Cache;
 
 use function dispatch;
@@ -18,7 +18,7 @@ class DispatcherFactory
      * If we used a class as the dispatcher, we would have to check whether the job is a closure ourselves, and
      * serialise it if it was.
      *
-     * @param Dispatchable|Closure $job
+     * @param \Illuminate\Foundation\Bus\Dispatchable|PendingChain|Closure $job
      * @param string $key
      * @param string $identifier
      * @return Closure
@@ -29,7 +29,11 @@ class DispatcherFactory
             if (Cache::get($key) == $identifier) {
                 Cache::forget($key);
 
-                dispatch($job);
+                if ($job instanceof PendingChain) {
+                    $job->dispatch();
+                } else {
+                    dispatch($job);
+                }
             }
         };
     }
