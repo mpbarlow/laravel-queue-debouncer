@@ -14,6 +14,7 @@ use Mpbarlow\LaravelQueueDebouncer\Support\SerializingCacheKeyProvider;
 use Mpbarlow\LaravelQueueDebouncer\Tests\Support\CustomCacheKeyProvider;
 use Mpbarlow\LaravelQueueDebouncer\Tests\Support\CustomUniqueIdentifierProvider;
 use Mpbarlow\LaravelQueueDebouncer\Tests\Support\DummyJob;
+use Mpbarlow\LaravelQueueDebouncer\Tests\Support\DummyJobWithArgsAndTrait;
 use ReflectionFunction;
 
 use function array_shift;
@@ -44,6 +45,24 @@ class DebounceTest extends TestCase
 
         $this->app->make(Debouncer::class)(function () {
         }, PHP_INT_MAX);
+    }
+    
+    /**
+     * @test
+     */
+    public function it_uses_the_new_trait_to_dispatch()
+    {
+        Bus::fake();
+            
+        $this->mock(Debouncer::class, function ($mock) {
+            $mock
+                ->shouldReceive('debounce')
+                ->once();
+        });
+            
+        DummyJobWithArgsAndTrait::debounce('test', now()->addMinutes(1));
+        
+        //Bus::assertDispatched(DummyJobWithArgsAndTrait::class);
     }
 
     /**
