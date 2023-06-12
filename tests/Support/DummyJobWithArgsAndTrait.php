@@ -6,11 +6,11 @@ namespace Mpbarlow\LaravelQueueDebouncer\Tests\Support;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Mpbarlow\LaravelQueueDebouncer\Traits\Debouncable;
+use Mpbarlow\LaravelQueueDebouncer\Traits\Debounceable;
 
 class DummyJobWithArgsAndTrait
 {
-    use Dispatchable, Queueable, Debouncable;
+    use Dispatchable, Queueable, Debounceable;
 
     protected $arg;
 
