@@ -45,7 +45,7 @@ class DebounceTest extends TestCase
         $this->app->make(Debouncer::class)(function () {
         }, PHP_INT_MAX);
     }
-
+    
     /**
      * @test
      * @dataProvider jobProvider
