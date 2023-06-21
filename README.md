@@ -66,6 +66,20 @@ use App\Jobs\MyJob;
 debounce(new MyJob(), 30);
 ```
 
+#### Trait
+
+```php
+use Illuminate\Bus\Queueable;
+use Illuminate\Foundation\Bus\Dispatchable;
+use Mpbarlow\LaravelQueueDebouncer\Traits\Debounceable;
+
+class MyJob {
+    use Debounceable, Dispatchable, Queueable;
+}
+
+MyJob::debounce('foo', 'bar', 'baz', 30);
+```
+
 When monitoring the queue, you will see an entry for the package’s internal dispatcher each time the debounced job is queued, but the job itself will only run once, when the final wait time has expired.
 
 For example, assuming the following code was ran at exactly 9am:
