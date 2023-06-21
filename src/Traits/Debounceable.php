@@ -14,7 +14,7 @@ trait Debounceable
     public static function debounce(...$jobProperties)
     {
         $wait = array_pop($jobProperties);
-        
+
         return Debouncer::debounce(new static(...$jobProperties), $wait);
     }
 }

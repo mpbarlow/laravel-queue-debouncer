@@ -16,13 +16,13 @@ class DebounceableTest extends TestCase
     public function it_uses_the_new_trait_to_dispatch()
     {
         Bus::fake();
-            
+
         $this->mock(Debouncer::class, function ($mock) {
             $mock
                 ->shouldReceive('debounce')
                 ->once();
         });
-            
+
         DummyJobWithArgsAndTrait::debounce('test', now()->addMinutes(1));
     }
 }

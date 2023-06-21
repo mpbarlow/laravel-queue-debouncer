@@ -45,7 +45,7 @@ class DebounceTest extends TestCase
         $this->app->make(Debouncer::class)(function () {
         }, PHP_INT_MAX);
     }
-    
+
     /**
      * @test
      * @dataProvider jobProvider
@@ -113,8 +113,18 @@ class DebounceTest extends TestCase
         // Closures and standard classes should work with both included cache key providers.
         // Chains only work with the serialisation-based key provider.
         return [
-            [function () {}, CallQueuedClosure::class, CacheKeyProvider::class],
-            [function () {}, CallQueuedClosure::class, SerializingCacheKeyProvider::class],
+            [
+                function () {
+                },
+                CallQueuedClosure::class,
+                CacheKeyProvider::class
+            ],
+            [
+                function () {
+                },
+                CallQueuedClosure::class,
+                SerializingCacheKeyProvider::class
+            ],
             [new DummyJob(), DummyJob::class, CacheKeyProvider::class],
             [new DummyJob(), DummyJob::class, SerializingCacheKeyProvider::class],
             [DummyJob::withChain([new DummyJob()]), DummyJob::class, SerializingCacheKeyProvider::class]
