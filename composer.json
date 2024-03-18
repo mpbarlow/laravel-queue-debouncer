@@ -1,5 +1,5 @@
 {
-    "name": "mpbarlow/laravel-queue-debouncer",
+    "name": "circlelinkhealth/laravel-queue-debouncer",
     "description": "A wrapper job for debouncing other queue jobs.",
     "keywords": [
         "laravel",
