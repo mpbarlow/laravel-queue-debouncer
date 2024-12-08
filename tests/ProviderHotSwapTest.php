@@ -9,10 +9,11 @@ use Illuminate\Support\Facades\Cache;
 use Mpbarlow\LaravelQueueDebouncer\Debouncer;
 use Mpbarlow\LaravelQueueDebouncer\Tests\Support\HotSwappedCacheKeyProvider;
 use Mpbarlow\LaravelQueueDebouncer\Tests\Support\HotSwappedIdentifierProvider;
+use PHPUnit\Framework\Attributes\Test;
 
 class ProviderHotSwapTest extends TestCase
 {
-    /** @test */
+    #[Test]
     public function the_cache_key_provider_can_be_hot_swapped()
     {
         Bus::fake();
@@ -32,7 +33,7 @@ class ProviderHotSwapTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function the_identifier_provider_can_be_hot_swapped()
     {
         Bus::fake();

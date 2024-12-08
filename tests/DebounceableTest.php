@@ -8,11 +8,12 @@ use Mpbarlow\LaravelQueueDebouncer\Debouncer;
 use Mpbarlow\LaravelQueueDebouncer\Tests\Support\DummyJobWithArgsAndTrait;
 use Illuminate\Support\Facades\Bus;
 
+use PHPUnit\Framework\Attributes\Test;
 use function debounce;
 
 class DebounceableTest extends TestCase
 {
-    /** @test */
+    #[Test]
     public function it_uses_the_new_trait_to_dispatch()
     {
         Bus::fake();

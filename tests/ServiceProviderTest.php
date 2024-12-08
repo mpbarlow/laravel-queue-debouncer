@@ -8,10 +8,11 @@ use Mpbarlow\LaravelQueueDebouncer\Contracts\CacheKeyProvider as CacheKeyProvide
 use Mpbarlow\LaravelQueueDebouncer\Contracts\UniqueIdentifierProvider as UniqueIdentifierProviderContract;
 use Mpbarlow\LaravelQueueDebouncer\Tests\Support\CustomCacheKeyProvider;
 use Mpbarlow\LaravelQueueDebouncer\Tests\Support\CustomUniqueIdentifierProvider;
+use PHPUnit\Framework\Attributes\Test;
 
 class ServiceProviderTest extends TestCase
 {
-    /** @test */
+    #[Test]
     public function it_fetches_the_cache_key_provider_from_the_config()
     {
         $this->app['config']->set('queue_debouncer.cache_key_provider', CustomCacheKeyProvider::class);
@@ -22,7 +23,7 @@ class ServiceProviderTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function it_fetches_the_unique_identifier_provider_from_the_config()
     {
         $this->app['config']->set('queue_debouncer.unique_identifier_provider', CustomUniqueIdentifierProvider::class);

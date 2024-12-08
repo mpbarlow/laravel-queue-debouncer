@@ -8,11 +8,12 @@ use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Cache;
 use Mpbarlow\LaravelQueueDebouncer\Debouncer;
 
+use PHPUnit\Framework\Attributes\Test;
 use const PHP_INT_MAX;
 
 class ClosureUniqueIdentifierProviderTest extends TestCase
 {
-    /** @test */
+    #[Test]
     public function it_calls_the_provided_closure()
     {
         Bus::fake();

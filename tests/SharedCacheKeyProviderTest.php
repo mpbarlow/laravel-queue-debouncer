@@ -8,14 +8,14 @@ use Mpbarlow\LaravelQueueDebouncer\Support\CacheKeyProvider;
 use Mpbarlow\LaravelQueueDebouncer\Support\SerializingCacheKeyProvider;
 use Mpbarlow\LaravelQueueDebouncer\Tests\Support\DummyJob;
 
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use function strpos;
 
 class SharedCacheKeyProviderTest extends TestCase
 {
-    /**
-     * @test
-     * @dataProvider cacheKeyProviderProvider
-     */
+    #[Test]
+    #[DataProvider('cacheKeyProviderProvider')]
     public function it_applies_the_cache_prefix_to_classes($provider)
     {
         $this->app['config']->set('queue_debouncer.cache_prefix', $prefix = '__PREFIX__');
@@ -28,10 +28,8 @@ class SharedCacheKeyProviderTest extends TestCase
         );
     }
 
-    /**
-     * @test
-     * @dataProvider cacheKeyProviderProvider
-     */
+    #[Test]
+    #[DataProvider('cacheKeyProviderProvider')]
     public function it_applies_the_cache_prefix_to_chains($provider)
     {
         $this->app['config']->set('queue_debouncer.cache_prefix', $prefix = '__PREFIX__');
@@ -44,10 +42,8 @@ class SharedCacheKeyProviderTest extends TestCase
         );
     }
 
-    /**
-     * @test
-     * @dataProvider cacheKeyProviderProvider
-     */
+    #[Test]
+    #[DataProvider('cacheKeyProviderProvider')]
     public function it_applies_the_cache_prefix_to_closures($provider)
     {
         $this->app['config']->set('queue_debouncer.cache_prefix', $prefix = '__PREFIX__');
@@ -61,10 +57,8 @@ class SharedCacheKeyProviderTest extends TestCase
         );
     }
 
-    /**
-     * @test
-     * @dataProvider cacheKeyProviderProvider
-     */
+    #[Test]
+    #[DataProvider('cacheKeyProviderProvider')]
     public function it_generates_a_unique_key_for_closures($provider)
     {
         $job1 = function () {
@@ -79,10 +73,8 @@ class SharedCacheKeyProviderTest extends TestCase
         $this->assertNotEquals($key1, $key2);
     }
 
-    /**
-     * @test
-     * @dataProvider cacheKeyProviderProvider
-     */
+    #[Test]
+    #[DataProvider('cacheKeyProviderProvider')]
     public function it_generates_a_consistent_key_for_closures($provider)
     {
         $job = function () {
@@ -95,7 +87,7 @@ class SharedCacheKeyProviderTest extends TestCase
         $this->assertEquals($key1, $key2);
     }
 
-    public function cacheKeyProviderProvider()
+    public static function cacheKeyProviderProvider()
     {
         return [
             [new CacheKeyProvider()],
