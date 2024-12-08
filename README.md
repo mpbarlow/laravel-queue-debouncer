@@ -4,10 +4,12 @@
 
 ## Requirements
 
-- Laravel >= 6.0
+- Laravel >= 10.0
 - An async queue driver
 
-**Note:** v2.0 requires at least Laravel 6. For Laravel 5.5 ..< 6.0 support, check out [v1.0.2](https://github.com/mpbarlow/laravel-queue-debouncer/tree/1.0.2)
+### Previous releases
+* For Laravel 6.0 ..< 10.0 support, check out [v2.6.0](https://github.com/mpbarlow/laravel-queue-debouncer/releases/tag/2.6.0)
+* For Laravel 5.5 ..< 6.0 support, check out [v1.0.2](https://github.com/mpbarlow/laravel-queue-debouncer/tree/1.0.2)
 
 ## Installation
 
