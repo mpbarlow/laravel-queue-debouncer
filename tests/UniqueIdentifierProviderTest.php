@@ -6,13 +6,14 @@ namespace Mpbarlow\LaravelQueueDebouncer\Tests;
 
 use Mpbarlow\LaravelQueueDebouncer\Support\UniqueIdentifierProvider;
 
+use PHPUnit\Framework\Attributes\Test;
 use function array_fill;
 use function array_map;
 use function collect;
 
 class UniqueIdentifierProviderTest extends TestCase
 {
-    /** @test */
+    #[Test]
     public function it_generates_unique_identifiers()
     {
         $provider = new UniqueIdentifierProvider();

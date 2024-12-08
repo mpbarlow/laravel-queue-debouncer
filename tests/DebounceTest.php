@@ -14,6 +14,8 @@ use Mpbarlow\LaravelQueueDebouncer\Support\SerializingCacheKeyProvider;
 use Mpbarlow\LaravelQueueDebouncer\Tests\Support\CustomCacheKeyProvider;
 use Mpbarlow\LaravelQueueDebouncer\Tests\Support\CustomUniqueIdentifierProvider;
 use Mpbarlow\LaravelQueueDebouncer\Tests\Support\DummyJob;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use ReflectionFunction;
 
 use function array_shift;
@@ -22,7 +24,7 @@ use const PHP_INT_MAX;
 
 class DebounceTest extends TestCase
 {
-    /** @test */
+    #[Test]
     public function it_injects_the_configured_cache_key_provider_and_unique_identifier_provider()
     {
         Bus::fake();
@@ -46,10 +48,8 @@ class DebounceTest extends TestCase
         }, PHP_INT_MAX);
     }
 
-    /**
-     * @test
-     * @dataProvider jobProvider
-     */
+    #[Test]
+    #[DataProvider('jobProvider')]
     public function it_debounces_jobs($job, $expectedDispatch, $keyProvider)
     {
         // So this is pretty tricky to test. It's a job that dispatches another job, so when we're faking the bus we
@@ -108,7 +108,7 @@ class DebounceTest extends TestCase
         $this->assertNull(Cache::get($key));
     }
 
-    public function jobProvider(): array
+    public static function jobProvider(): array
     {
         // Closures and standard classes should work with both included cache key providers.
         // Chains only work with the serialisation-based key provider.

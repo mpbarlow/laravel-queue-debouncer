@@ -7,10 +7,11 @@ namespace Mpbarlow\LaravelQueueDebouncer\Tests;
 use Mpbarlow\LaravelQueueDebouncer\Support\SerializingCacheKeyProvider;
 use Mpbarlow\LaravelQueueDebouncer\Tests\Support\DummyJob;
 use Mpbarlow\LaravelQueueDebouncer\Tests\Support\DummyJobWithArgs;
+use PHPUnit\Framework\Attributes\Test;
 
 class SerializingCacheKeyProviderTest extends TestCase
 {
-    /** @test */
+    #[Test]
     public function it_generates_the_same_key_when_objects_are_equal()
     {
         $provider = new SerializingCacheKeyProvider();
@@ -24,7 +25,7 @@ class SerializingCacheKeyProviderTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function it_generates_a_unique_key_when_objects_are_not_equal()
     {
         $provider = new SerializingCacheKeyProvider();
@@ -38,7 +39,7 @@ class SerializingCacheKeyProviderTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function it_allows_for_chains_to_be_debounced()
     {
         $provider = new SerializingCacheKeyProvider();
