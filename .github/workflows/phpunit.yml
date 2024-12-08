@@ -1,13 +1,11 @@
-name: Tests
-
+name: PHPUnit Tests
 on: [push]
-
 jobs:
-  build-test:
+  test:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v3
       - uses: php-actions/composer@v6
-      - name: Tests
-        uses: php-actions/phpunit@v3
+      - uses: php-actions/phpunit@v3
+        with:
+          test_suffix: "Test.php"
