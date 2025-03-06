@@ -4,16 +4,19 @@
 
 ## Requirements
 
-- Laravel >= 10.0
+- Laravel >= 11.0
 - An async queue driver
 
 ### Previous releases
+* For Laravel 10.0 ..< 11.0 support, check out [v3.0.0](https://github.com/mpbarlow/laravel-queue-debouncer/releases/tag/3.0.0)
 * For Laravel 6.0 ..< 10.0 support, check out [v2.6.0](https://github.com/mpbarlow/laravel-queue-debouncer/releases/tag/2.6.0)
 * For Laravel 5.5 ..< 6.0 support, check out [v1.0.2](https://github.com/mpbarlow/laravel-queue-debouncer/tree/1.0.2)
 
 ## Installation
 
-`composer require mpbarlow/laravel-queue-debouncer`
+```bash
+$ composer require mpbarlow/laravel-queue-debouncer
+```
 
 ## Background
 
