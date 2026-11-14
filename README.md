@@ -2,6 +2,10 @@
 
 ### Easy queue job debouncing
 
+> ⚠️ [As of Laravel 13](https://github.com/laravel/framework/pull/59507) this functionality is built into the framework. If you're using Laravel 13 or above you should probably just use that functionality instead.
+> 
+> This package is unlikely to recieve further updates.
+
 ## Requirements
 
 - Laravel >= 11.0
